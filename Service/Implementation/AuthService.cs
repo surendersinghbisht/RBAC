@@ -38,7 +38,7 @@ namespace Service.Implementation
                 {
                     return "Email already exists";
                 }
-
+                
                 var user = new IdentityUser
                 {
                     UserName = registerDt.UserName,

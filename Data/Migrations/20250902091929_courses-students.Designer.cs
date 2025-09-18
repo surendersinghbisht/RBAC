@@ -4,6 +4,7 @@ using Data.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(IdentityDbContext))]
-    partial class IdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250902091929_courses-students")]
+    partial class coursesstudents
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,51 +24,6 @@ namespace Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("CourseStudent", b =>
-                {
-                    b.Property<int>("CoursesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("studentsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CoursesId", "studentsId");
-
-                    b.HasIndex("studentsId");
-
-                    b.ToTable("CourseStudent");
-                });
-
-            modelBuilder.Entity("Data.Entity.Address", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CountryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FullAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("StateId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Addresses");
-                });
 
             modelBuilder.Entity("Data.Entity.Author", b =>
                 {
@@ -107,263 +65,6 @@ namespace Data.Migrations
                     b.HasIndex("AuthorId");
 
                     b.ToTable("Books");
-                });
-
-            modelBuilder.Entity("Data.Entity.City", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("StateId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StateId");
-
-                    b.ToTable("City");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Dehradun",
-                            StateId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Nainital",
-                            StateId = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "New Delhi",
-                            StateId = 2
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Mumbai",
-                            StateId = 3
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Pune",
-                            StateId = 3
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "New York City",
-                            StateId = 4
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Buffalo",
-                            StateId = 4
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Los Angeles",
-                            StateId = 5
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "San Francisco",
-                            StateId = 5
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "Houston",
-                            StateId = 6
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "Dallas",
-                            StateId = 6
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "London",
-                            StateId = 7
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Name = "Croydon",
-                            StateId = 7
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Name = "Manchester",
-                            StateId = 8
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Name = "Salford",
-                            StateId = 8
-                        });
-                });
-
-            modelBuilder.Entity("Data.Entity.Country", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Country");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "India"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "USA"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "United Kingdom"
-                        });
-                });
-
-            modelBuilder.Entity("Data.Entity.Course", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Courses");
-                });
-
-            modelBuilder.Entity("Data.Entity.State", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CountryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CountryId");
-
-                    b.ToTable("State");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CountryId = 1,
-                            Name = "Uttarakhand"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CountryId = 1,
-                            Name = "Delhi"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CountryId = 1,
-                            Name = "Maharashtra"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CountryId = 2,
-                            Name = "New York"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CountryId = 2,
-                            Name = "California"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CountryId = 2,
-                            Name = "Texas"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CountryId = 3,
-                            Name = "England - London"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CountryId = 3,
-                            Name = "England - Manchester"
-                        });
-                });
-
-            modelBuilder.Entity("Data.Entity.Student", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("Data.Entity.TwoFaToken", b =>
@@ -588,21 +289,6 @@ namespace Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CourseStudent", b =>
-                {
-                    b.HasOne("Data.Entity.Course", null)
-                        .WithMany()
-                        .HasForeignKey("CoursesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Data.Entity.Student", null)
-                        .WithMany()
-                        .HasForeignKey("studentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Data.Entity.Book", b =>
                 {
                     b.HasOne("Data.Entity.Author", "Author")
@@ -612,28 +298,6 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
-                });
-
-            modelBuilder.Entity("Data.Entity.City", b =>
-                {
-                    b.HasOne("Data.Entity.State", "State")
-                        .WithMany("cities")
-                        .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("State");
-                });
-
-            modelBuilder.Entity("Data.Entity.State", b =>
-                {
-                    b.HasOne("Data.Entity.Country", "Country")
-                        .WithMany("States")
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Country");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -690,16 +354,6 @@ namespace Data.Migrations
             modelBuilder.Entity("Data.Entity.Author", b =>
                 {
                     b.Navigation("Books");
-                });
-
-            modelBuilder.Entity("Data.Entity.Country", b =>
-                {
-                    b.Navigation("States");
-                });
-
-            modelBuilder.Entity("Data.Entity.State", b =>
-                {
-                    b.Navigation("cities");
                 });
 #pragma warning restore 612, 618
         }

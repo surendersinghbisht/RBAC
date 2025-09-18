@@ -64,15 +64,15 @@ namespace RBAC.Controllers
         }
 
         [HttpPost("enable-2fa")]
-        public async Task<ActionResult<bool>> EnableTwoFactor(string email, bool enable)
+        public async Task<ActionResult<bool>> EnableTwoFactor(Enable2faDto enable)
         {
             try
             {
-                var result = await _authService.EnableTwoFactorAuthenticationAsync(email, enable);
+                var result = await _authService.EnableTwoFactorAuthenticationAsync(enable.Email, enable.enable);
 
                 if (!result)
                 {
-                    return BadRequest($"Failed to {(enable ? "enable" : "disable")} two-factor authentication.");
+                    return BadRequest($"Failed to {(enable.enable ? "enable" : "disable")} two-factor authentication.");
                 }
 
                 return Ok(result); 

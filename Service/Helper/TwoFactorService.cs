@@ -45,7 +45,7 @@ namespace Service.Helper
             var existingTokens = await _context.TwoFaTokens
                 .Where(t => t.UserId == userId)
                 .ToListAsync();
-
+         
             if (existingTokens.Any())
             {
                 _context.TwoFaTokens.RemoveRange(existingTokens);
@@ -58,7 +58,7 @@ namespace Service.Helper
                 Token = code,
                 ExpiryDate = DateTime.UtcNow.AddMinutes(5)
             };
-
+           
             await _context.TwoFaTokens.AddAsync(token);
             await _context.SaveChangesAsync();
 
