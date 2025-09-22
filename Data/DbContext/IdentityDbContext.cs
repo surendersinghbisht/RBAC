@@ -24,10 +24,28 @@ namespace Data.DbContext
         public DbSet<City> City { get; set; }
 
         public DbSet<Address> Addresses { get; set; }
+
+        public DbSet<Announcements> Announcements { get; set; }
+
+        public DbSet<UserNotification> userNotifications { get; set; }
+
+        public DbSet<UserTask> userTask { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<UserTask>().ToTable("UserTasks");
 
+            builder.Entity<UserTask>()
+                .HasOne(t => t.AssignedBy)
+                .WithMany()
+                .HasForeignKey(t => t.AssignedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<UserTask>()
+                .HasOne(t => t.AssignedTo)
+                .WithMany()
+                .HasForeignKey(t => t.AssignedToId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<TwoFaToken>(entity =>
             {
@@ -35,6 +53,9 @@ namespace Data.DbContext
                 entity.Property(t => t.Token).IsRequired();
                 entity.Property(t => t.ExpiryDate).IsRequired();
             });
+
+            builder.Entity<Announcements>().
+                HasOne(a => a.User).WithMany().HasForeignKey(a => a.CreatedBy);
 
 
             builder.Entity<Country>().HasData(

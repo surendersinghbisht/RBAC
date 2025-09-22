@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace Data.Entity
 {
-    public class City
+    public class Activity
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int StateId { get; set; }
-        public State State { get; set; }
+        public string Description { get; set; }
+        public DateTime Created { get; set; } = DateTime.Now;
+        
     }
 }
