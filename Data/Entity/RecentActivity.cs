@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace Data.Entity
 {
-    public class Activity
+    public class RecentActivity
     {
         public int Id { get; set; }
+        public string UserId { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
-        public DateTime Created { get; set; } = DateTime.Now;
+        public string Message { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         
     }
 }

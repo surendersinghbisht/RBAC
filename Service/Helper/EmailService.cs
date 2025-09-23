@@ -52,7 +52,7 @@ namespace Service.Helper
             try
             {
                 _client.DefaultRequestHeaders.Clear();
-                _client.DefaultRequestHeaders.Add("origin", "http://localhost"); // required for EmailJS
+                _client.DefaultRequestHeaders.Add("origin", "http://localhost"); 
 
                 response = await _client.PostAsync("https://api.emailjs.com/api/v1.0/email/send", content);
 

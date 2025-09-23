@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Data.Entity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model.Dto;
@@ -61,6 +62,13 @@ namespace RBAC.Controllers
         {
             var res = await _taskService.UpdateStatus(updateTask);
            return Ok();
+        }
+
+        [HttpGet("recent-activities/{userId}")]
+        public async Task<List<RecentActivity>> GetActivities(string userId)
+        {
+            var res = await _taskService.GetActivities(userId);
+            return res;
         }
     }
 }

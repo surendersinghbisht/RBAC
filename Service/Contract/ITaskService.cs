@@ -1,6 +1,8 @@
-﻿using Model.Dto;
+﻿using Data.Entity;
+using Model.Dto;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +19,7 @@ namespace Service.Contract
         Task<List<AddTaskDto>> GetTaskByStatus(string userId, TStatus status);
 
         Task<bool> UpdateStatus(UpdateTaskDt updateTask);
+        Task<List<RecentActivity>> GetActivities(string userId);
 
     }
 }

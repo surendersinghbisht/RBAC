@@ -30,6 +30,8 @@ namespace Data.DbContext
         public DbSet<UserNotification> userNotifications { get; set; }
 
         public DbSet<UserTask> userTask { get; set; }
+
+        public DbSet<RecentActivity> activity { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

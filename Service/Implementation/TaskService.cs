@@ -119,7 +119,28 @@ namespace Service.Implementation
 
             task.Status = updateTask.status;
             await _context.SaveChangesAsync();
+
+            var activity = new RecentActivity
+            {
+                CreatedAt = DateTime.UtcNow,
+                Name = $"{task.Status} Task",
+                Message = $"{task.Title}",
+                UserId = task.AssignedToId
+            };
+
+           await _context.activity.AddAsync(activity);
+           await _context.SaveChangesAsync();
             return true;              
+        }
+
+        public async Task<List<RecentActivity>> GetActivities(string userId)
+        {
+            var activities = await _context.activity.Where( 
+                t => t.UserId == userId).OrderByDescending(t => t.CreatedAt).
+                Take(3).ToListAsync();
+
+            return activities;
+
         }
 
     }
