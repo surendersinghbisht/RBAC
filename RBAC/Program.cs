@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Mscc.GenerativeAI;
 using Service.Contract;
 using Service.Helper;
 using Service.Implementation;
 using System.Text;
+using Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,14 @@ builder.Services.AddCors(options =>
 // Controllers
 builder.Services.AddControllers();
 
+builder.Services.Configure<GeminiConfiguration>(builder.Configuration.GetSection("Gemini"));
+
+// Register the GoogleAI client for dependency injection
+builder.Services.AddSingleton<GoogleAI>(sp =>
+{
+    var apiKey = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<GeminiConfiguration>>().Value.ApiKey;
+    return new GoogleAI(apiKey);
+});
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
