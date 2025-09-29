@@ -2,15 +2,15 @@ pipeline {
     agent any
 
     environment {
-        DOTNET_VERSION = "6.0"
-        DOCKER_IMAGE = "surendersingh/rbac-app"
+        DOCKER_IMAGE = "surendersingh/rbac-app:latest"
+        DOCKER_REGISTRY = "docker.io" // Change if using another registry
+        DOCKER_CREDENTIALS = "dockerhub-credentials-id" // Your Jenkins Docker Hub credentials ID
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
-                git branch: 'master',
-                    url: 'https://github.com/surendersinghbisht/RBAC.git'
+                git branch: 'master', url: 'https://github.com/surendersinghbisht/RBAC.git'
             }
         }
 
@@ -40,20 +40,27 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat "docker build -t %DOCKER_IMAGE%:latest ."
+                bat "docker build -t ${DOCKER_IMAGE} ."
             }
         }
 
         stage('Push Docker Image') {
-            when {
-                expression { return env.DOCKER_HUB_USERNAME != null }
-            }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    bat "echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin"
-                    bat "docker push %DOCKER_IMAGE%:latest"
+                script {
+                    docker.withRegistry("https://${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS}") {
+                        bat "docker push ${DOCKER_IMAGE}"
+                    }
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check the logs!'
         }
     }
 }
