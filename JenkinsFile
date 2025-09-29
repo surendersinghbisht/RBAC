@@ -2,39 +2,58 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "my-dotnet-app"
-        CONTAINER_NAME = "my-dotnet-container"
+        DOTNET_VERSION = "6.0"   // change if using 7.0/8.0
+        DOCKER_IMAGE = "surendersingh/rbac-app"  // change to your DockerHub repo
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/your-username/my-dotnet-app.git'
+                git branch: 'master',
+                    url: 'https://github.com/surendersinghbisht/RBAC.git'
+                    // If private repo:
+                    // credentialsId: 'github-token'
             }
         }
 
-        stage('Build .NET') {
+        stage('Restore Dependencies') {
             steps {
                 sh 'dotnet restore'
-                sh 'dotnet build --configuration Release'
-                sh 'dotnet test'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'dotnet build --configuration Release --no-restore'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'dotnet test --no-build --verbosity normal'
+            }
+        }
+
+        stage('Publish') {
+            steps {
+                sh 'dotnet publish -c Release -o out'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t $IMAGE_NAME ."
+                sh "docker build -t ${DOCKER_IMAGE}:latest ."
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Push Docker Image') {
+            when {
+                expression { return env.DOCKER_HUB_USERNAME != null }
+            }
             steps {
-                script {
-                    // Stop old container if running
-                    sh "docker rm -f $CONTAINER_NAME || true"
-                    // Run new container
-                    sh "docker run -d -p 5000:80 --name $CONTAINER_NAME $IMAGE_NAME"
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                    sh "docker push ${DOCKER_IMAGE}:latest"
                 }
             }
         }
