@@ -2,51 +2,41 @@ pipeline {
     agent any
 
     environment {
-        DOTNET_CLI_HOME = "C:\\Program Files\\dotnet"
+        IMAGE_NAME = "my-dotnet-app"
+        CONTAINER_NAME = "my-dotnet-container"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'main',
+                    url: 'https://github.com/your-username/my-dotnet-app.git'
             }
         }
 
-        stage('Build') {
+        stage('Build .NET') {
+            steps {
+                sh 'dotnet restore'
+                sh 'dotnet build --configuration Release'
+                sh 'dotnet test'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t $IMAGE_NAME ."
+            }
+        }
+
+        stage('Run Docker Container') {
             steps {
                 script {
-                    // Restoring dependencies
-                    //bat "cd ${DOTNET_CLI_HOME} && dotnet restore"
-                    bat "dotnet restore"
-
-                    // Building the application
-                    bat "dotnet build --configuration Release"
+                    // Stop old container if running
+                    sh "docker rm -f $CONTAINER_NAME || true"
+                    // Run new container
+                    sh "docker run -d -p 5000:80 --name $CONTAINER_NAME $IMAGE_NAME"
                 }
             }
-        }
-
-        stage('Test') {
-            steps {
-                script {
-                    // Running tests
-                    bat "dotnet test --no-restore --configuration Release"
-                }
-            }
-        }
-
-        stage('Publish') {
-            steps {
-                script {
-                    // Publishing the application
-                    bat "dotnet publish --no-restore --configuration Release --output .\\publish"
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Build, test, and publish successful!'
         }
     }
 }
