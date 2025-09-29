@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOTNET_VERSION = "6.0"   // change if using 7.0/8.0
-        DOCKER_IMAGE = "surendersingh/rbac-app"  // change to your DockerHub repo
+        DOTNET_VERSION = "6.0"
+        DOCKER_IMAGE = "surendersingh/rbac-app"
     }
 
     stages {
@@ -11,38 +11,36 @@ pipeline {
             steps {
                 git branch: 'master',
                     url: 'https://github.com/surendersinghbisht/RBAC.git'
-                    // If private repo:
-                    // credentialsId: 'github-token'
             }
         }
 
         stage('Restore Dependencies') {
             steps {
-                sh 'dotnet restore'
+                bat 'dotnet restore'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'dotnet build --configuration Release --no-restore'
+                bat 'dotnet build --configuration Release --no-restore'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'dotnet test --no-build --verbosity normal'
+                bat 'dotnet test --no-build --verbosity normal'
             }
         }
 
         stage('Publish') {
             steps {
-                sh 'dotnet publish -c Release -o out'
+                bat 'dotnet publish -c Release -o out'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${DOCKER_IMAGE}:latest ."
+                bat "docker build -t %DOCKER_IMAGE%:latest ."
             }
         }
 
@@ -52,8 +50,8 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-                    sh "docker push ${DOCKER_IMAGE}:latest"
+                    bat "echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin"
+                    bat "docker push %DOCKER_IMAGE%:latest"
                 }
             }
         }
