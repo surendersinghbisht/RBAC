@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "surendersingh/rbac-app:latest"
         DOCKER_REGISTRY = "docker.io" // Change if using another registry
-        DOCKER_CREDENTIALS = "dockerhub-credentials-id" // Your Jenkins Docker Hub credentials ID
+        DOCKER_CREDENTIALS = "dockerhub-credential" // Your Jenkins Docker Hub credentials ID
     }
 
     stages {
