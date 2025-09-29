@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = "surendersinghb/rbac:latest"
+        DOCKER_IMAGE = "surendersinghb/rbac"
         DOCKER_REGISTRY = "docker.io" // Change if using another registry
         DOCKER_CREDENTIALS = "dockerhub-credential" // Your Jenkins Docker Hub credentials ID
     }
