@@ -2,17 +2,14 @@ pipeline {
     agent any
 
     environment {
-        // Docker image name and tag
         DOCKER_IMAGE = "surendersinghb/rbac:latest"
-        DOCKER_REGISTRY = "docker.io" 
-        // Jenkins credential ID for Docker Hub (username + PAT)
-        DOCKER_CREDENTIALS = "dockerhub-credential" 
+        DOCKER_REGISTRY = "https://index.docker.io/v1/"
+        DOCKER_CREDENTIALS = "dockerhub-credential" // This is the Jenkins credential ID
     }
 
     stages {
         stage('Checkout SCM') {
             steps {
-                // No credentials needed for public repo
                 git branch: 'master', url: 'https://github.com/surendersinghbisht/RBAC.git'
             }
         }
@@ -50,8 +47,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    // Push Docker image using Jenkins Docker credentials
-                    docker.withRegistry("https://${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS}") {
+                    docker.withRegistry("${DOCKER_REGISTRY}", "${DOCKER_CREDENTIALS}") {
                         bat "docker push ${DOCKER_IMAGE}"
                     }
                 }
