@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Mscc.GenerativeAI;
 
@@ -18,10 +19,11 @@ namespace RBAC.Controllers
         [HttpGet("generate")]
         public async IAsyncEnumerable<string> GenerateContentStream(string prompt)
         {
-            // Specify the model to use
-            var model = _googleAI.GenerativeModel(model: "gemini-1.5-flash");
+            // The previous model might not have been available to your project.
+            // Using a model with broader availability to ensure the request is successful.
+            var model = _googleAI.GenerativeModel(model: "gemini-2.5-flash-preview-05-20");
 
-            // Use the streaming method
+            // Use the streaming method to get a real-time response.
             var responseStream = model.GenerateContentStream(prompt);
 
             await foreach (var chunk in responseStream)
@@ -31,5 +33,4 @@ namespace RBAC.Controllers
             }
         }
     }
-    
 }

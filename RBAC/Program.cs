@@ -53,13 +53,10 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngularDev", policy =>
-    {
-        policy.WithOrigins("http://localhost:4200") // Angular dev URL
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials(); // optional, if you send cookies
-    });
+    options.AddPolicy("AllowAll",
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
 });
 
 // Controllers
@@ -90,7 +87,7 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 var app = builder.Build();
 
 // Use CORS before authentication
-app.UseCors("AllowAngularDev");
+app.UseCors("AllowAll");
 
 if (app.Environment.IsDevelopment())
 {
