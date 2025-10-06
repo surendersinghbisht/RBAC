@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Data.Entity;
+using Data.Migrations;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Model.Dto;
@@ -9,9 +11,9 @@ namespace Service.Implementation
     public class UserService: IUserService
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         public UserService(UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager
+            RoleManager<ApplicationRole> roleManager
             ) {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -21,18 +23,29 @@ namespace Service.Implementation
             try
             {
                
-                var userDtos = new List<IdentityUserDto>();
 
-                
-                var userRoleUser = await _userManager.GetUsersInRoleAsync("User");
 
-              return userRoleUser.Select(u => new IdentityUserDto
-                {
-                    Email = u.Email,
-                    Id = u.Id,
-                    UserName = u.UserName,
-                    Role = "User"
-                });
+                var users = await _userManager.Users.ToListAsync();
+                var allRoles = _roleManager.Roles.Where(r => r.Name != "Admin");
+
+                var userDtoList = new List<IdentityUserDto>();
+                foreach (var user in users) {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if(!roles.Contains("Admin"))
+                    {
+                        userDtoList.Add(new IdentityUserDto
+                        {
+                           Email = user.Email,
+                           Id = user.Id,
+                           Role = roles.FirstOrDefault(),
+                           UserName = user.UserName,
+           
+                        });
+                    }
+                }
+
+                return userDtoList;
+       
             }
             catch (Exception ex)
             {

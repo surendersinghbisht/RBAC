@@ -6,7 +6,7 @@ using System.Reflection.Emit;
 
 namespace Data.DbContext
 {
-    public class IdentityDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class IdentityDbContext : IdentityDbContext<IdentityUser, ApplicationRole, string>
     {
         public IdentityDbContext(DbContextOptions<IdentityDbContext> options)
             : base(options)
@@ -32,9 +32,19 @@ namespace Data.DbContext
         public DbSet<UserTask> userTask { get; set; }
 
         public DbSet<RecentActivity> activity { get; set; }
+
+           
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
+           
+
             base.OnModelCreating(builder);
+            builder.Entity<ApplicationRole>(entity =>
+            {
+                entity.Property(e => e.IsActive).HasDefaultValue(true);
+                entity.Property(e => e.ShortDescription).HasMaxLength(500);
+            });
             builder.Entity<UserTask>().ToTable("UserTasks");
 
             builder.Entity<UserTask>()

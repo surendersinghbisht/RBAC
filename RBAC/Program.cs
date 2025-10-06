@@ -1,5 +1,6 @@
 ﻿using Contract.ITokenService;
 using Data.DbContext;
+using Data.Entity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ builder.Services.AddIdentityCore<IdentityUser>(options =>
 {
     options.User.RequireUniqueEmail = true;
 })
-.AddRoles<IdentityRole>()
+.AddRoles<ApplicationRole>()
 .AddEntityFrameworkStores<IdentityDbContext>()
 .AddDefaultTokenProviders();
 
@@ -83,6 +84,7 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
 builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 var app = builder.Build();
 

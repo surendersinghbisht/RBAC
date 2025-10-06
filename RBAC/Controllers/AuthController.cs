@@ -95,6 +95,16 @@ namespace RBAC.Controllers
             return Ok(result);  
         }
 
+        [HttpPost("forget-password")]
+        public async Task<IActionResult> ForgetPassword( ForgetPassword forgetPassword)
+        {
+            var result = await _authService.ForgetPassword(forgetPassword);
+
+            if (result)
+                return Ok(new { message = "Password reset successfully." });
+
+            return BadRequest(new { message = "Invalid email or reset failed." });
+        }
 
     }
 }

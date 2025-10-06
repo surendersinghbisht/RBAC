@@ -1,4 +1,5 @@
 ﻿using Contract.ITokenService;
+using Data.Entity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
@@ -11,12 +12,12 @@ namespace Service.Implementation
     public class AuthService : IAuthService
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly IConfiguration _config;
         private readonly ITokenService _tokenService;
         private readonly TwoFactorService _twoFactorService;
         public AuthService(UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager,
+            RoleManager<ApplicationRole> roleManager,
             IConfiguration config,
             ITokenService tokenService,
             TwoFactorService twoFactorService
@@ -152,6 +153,25 @@ namespace Service.Implementation
             }
         }
 
+        public async Task<bool> ForgetPassword(ForgetPassword forgetPassword)
+        {
+            var user = await _userManager.FindByEmailAsync(forgetPassword.Email);
+            if (user == null)
+                return false;
+
+            if(forgetPassword.NewPassword != forgetPassword.ConfirmPassword)
+            {
+                return false;
+            }
+            // Generate a password reset token
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            // Reset the password using the token
+            var result = await _userManager.ResetPasswordAsync(user, resetToken, forgetPassword.ConfirmPassword);
+
+            return result.Succeeded;
+        }
+
         //public async Task<LoginResponseDto> ValidateTwoFactorCode(TwoFactorDto dto)
         //{
         //    var user = await _userManager.FindByEmailAsync(dto.Email);
@@ -203,4 +223,4 @@ namespace Service.Implementation
         //}
     }
 
-    }
+}

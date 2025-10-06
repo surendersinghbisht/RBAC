@@ -13,5 +13,6 @@ namespace Service.Contract
         Task<LoginResponseDto> LoginAsync(LoginDto loginDt);
         Task<bool> EnableTwoFactorAuthenticationAsync(string email, bool enable);
         //Task<LoginResponseDto> ValidateTwoFactorCode(TwoFactorDto dto);
+        Task<bool> ForgetPassword(ForgetPassword forgetPassword);
     }
 }
