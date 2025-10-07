@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.FileProviders;
 using Mscc.GenerativeAI;
 using Service.Contract;
 using Service.Helper;
@@ -14,10 +15,8 @@ using Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.Services.AddDbContext<IdentityDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 
 builder.Services.AddIdentityCore<IdentityUser>(options =>
 {
@@ -26,7 +25,6 @@ builder.Services.AddIdentityCore<IdentityUser>(options =>
 .AddRoles<ApplicationRole>()
 .AddEntityFrameworkStores<IdentityDbContext>()
 .AddDefaultTokenProviders();
-
 
 builder.Services.AddAuthentication(options =>
 {
@@ -48,9 +46,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
 builder.Services.AddAuthorization();
-
 
 builder.Services.AddCors(options =>
 {
@@ -60,7 +56,6 @@ builder.Services.AddCors(options =>
                         .AllowAnyHeader());
 });
 
-// Controllers
 builder.Services.AddControllers();
 
 builder.Services.Configure<GeminiConfiguration>(builder.Configuration.GetSection("Gemini"));
@@ -71,6 +66,7 @@ builder.Services.AddSingleton<GoogleAI>(sp =>
     var apiKey = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<GeminiConfiguration>>().Value.ApiKey;
     return new GoogleAI(apiKey);
 });
+
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -88,7 +84,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 
 var app = builder.Build();
 
-// Use CORS before authentication
+// ✅ Enable CORS before anything else
 app.UseCors("AllowAll");
 
 if (app.Environment.IsDevelopment())
@@ -101,11 +97,22 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// HTTPS redirection
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
+    RequestPath = ""
+});
+
+
+
 
 app.MapControllers();
 

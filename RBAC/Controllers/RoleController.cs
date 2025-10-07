@@ -55,5 +55,19 @@ namespace RBAC.Controllers
             else
                 return BadRequest(new { message = "Role creation failed or role already exists." });
         }
+
+        [HttpPost("update-role-status")]
+        public async Task<IActionResult> UpdateRoleActiveStatus(RoleDt roleData)
+        {
+            var res = await _roleService.UpdateRoleActiveStatus(roleData);
+            return Ok(new { message = "Role updated successfully." });
+        }
+
+        [HttpGet("get-all-active-roles")]
+        public async Task<ActionResult> GetAllActiveRoles()
+        {
+            var activeRoles = await _roleService.GetAllActiveRoles();
+            return Ok(activeRoles);
+        }
     }
     }

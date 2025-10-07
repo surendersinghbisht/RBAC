@@ -33,6 +33,7 @@ namespace Data.DbContext
 
         public DbSet<RecentActivity> activity { get; set; }
 
+        public DbSet<UserDetails> userDetails { get; set; }
            
         protected override void OnModelCreating(ModelBuilder builder)
         {

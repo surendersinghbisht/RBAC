@@ -12,5 +12,8 @@ namespace Service.Contract
         Task<bool> AddNewRole(RoleDt roleDt);
         Task<List<RoleDt>> GetAllRoles();
         Task<bool> DeleteRole(string id);
+
+        Task<bool> UpdateRoleActiveStatus(RoleDt roledt);
+        Task<List<RoleDt>> GetAllActiveRoles();
     }
 }

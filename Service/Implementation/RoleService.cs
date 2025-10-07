@@ -11,12 +11,15 @@ using System.Threading.Tasks;
 
 namespace Service.Implementation
 {
-    public class RoleService:IRoleService
+    public class RoleService: IRoleService
     {
         private RoleManager<ApplicationRole> _roleManager;
+        private UserManager<IdentityUser> _userManager;
         public RoleService(
-            RoleManager<ApplicationRole> roleManager) {
+            RoleManager<ApplicationRole> roleManager,
+            UserManager<IdentityUser> userManager) {
         _roleManager = roleManager;
+            _userManager = userManager;
         }
 
        public async Task<bool> AddNewRole(RoleDt roleDt)
@@ -38,6 +41,23 @@ namespace Service.Implementation
                 return false;
 
             return true;
+        }
+
+        public async Task<List<RoleDt>> GetAllActiveRoles()
+        {
+            var activeRoles = _roleManager.Roles.Where(r => r.IsActive == true).ToList();
+            var activeRolesList = new List<RoleDt>();
+            foreach (var role in activeRoles) {
+                var createdRoleDt = new RoleDt
+                {
+                    Id = role.Id,
+                    IsActive = role.IsActive,
+                    Name = role.Name,
+                    ShortDescription = role.ShortDescription
+                };
+                activeRolesList.Add(createdRoleDt);
+            }
+            return activeRolesList;
         }
 
         public async Task<List<RoleDt>> GetAllRoles()
@@ -68,6 +88,41 @@ namespace Service.Implementation
 
             return result.Succeeded;
         }
+
+        public async Task<bool> UpdateRoleActiveStatus(RoleDt roledt)
+        {
+            var role = await _roleManager.FindByIdAsync(roledt.Id);
+            if (role == null) return false;
+
+            role.IsActive = roledt.IsActive;
+            var result = await _roleManager.UpdateAsync(role);
+
+            if (!result.Succeeded) return false;
+
+            if (role.IsActive == false)
+            {
+                var users = await _userManager.GetUsersInRoleAsync(role.Name);
+
+                var defaultRoleExists = await _roleManager.RoleExistsAsync("User");
+
+                if (!defaultRoleExists)
+                {
+                    await _roleManager.CreateAsync(new ApplicationRole { Name = "User", IsActive = true });
+
+                }
+
+                foreach (var user in users)
+                {
+                    await _userManager.RemoveFromRoleAsync(user, role.Name);
+
+                    await _userManager.AddToRoleAsync(user, "User");
+                }
+
+            }
+
+            return true;
+        }
+
 
     }
 }

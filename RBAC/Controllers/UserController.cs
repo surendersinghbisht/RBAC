@@ -14,8 +14,12 @@ namespace RBAC.Controllers
     public class UserController : ControllerBase
     {
        private readonly IUserService _userService;
-        public UserController(IUserService userService) {
+        private readonly IWebHostEnvironment _env;
+        public UserController(IUserService userService
+            , IWebHostEnvironment env
+            ) {
             _userService = userService;
+            _env = env;
         }
 
         [Authorize(Roles ="Admin")]
@@ -75,10 +79,35 @@ namespace RBAC.Controllers
                 return StatusCode(500, new { Message = $"Error updating role: {ex.Message}" });
             }
         }
+        [HttpPost("UpdateUserDetails")]
+        public async Task<IActionResult> UpdateUserDetails([FromForm] UserDetailsDto dto)
+        {
+            if (dto == null)
+                return BadRequest("No data provided.");
+
+            var result = await _userService.UpdateUserDetailsAsync(dto);
+
+            if (!result)
+                return BadRequest("Failed to update user details.");
+
+            return Ok(new { message = "User details updated successfully." });
+        }
+
+
+
+
+        [HttpGet("get-user-details/{userId}")]
+        public async Task<ActionResult<UserDetailsDto>> GetUserDetailsAsync(string userId)
+        {
+            var details = await _userService.GetUserDetails(userId);
+            if (details == null)
+                return NotFound("User not found");
+
+            return Ok(details);
+        }
+    }
 
 
     }
-
-}
 
 

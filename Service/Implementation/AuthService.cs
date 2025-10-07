@@ -1,4 +1,5 @@
 ﻿using Contract.ITokenService;
+using Data.DbContext;
 using Data.Entity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
@@ -16,13 +17,16 @@ namespace Service.Implementation
         private readonly IConfiguration _config;
         private readonly ITokenService _tokenService;
         private readonly TwoFactorService _twoFactorService;
+        private readonly IdentityDbContext _identityDbContext;
         public AuthService(UserManager<IdentityUser> userManager,
             RoleManager<ApplicationRole> roleManager,
+            IdentityDbContext identityDbContext,
             IConfiguration config,
             ITokenService tokenService,
             TwoFactorService twoFactorService
             )
         {
+            _identityDbContext = identityDbContext;
             _userManager = userManager;
             _roleManager = roleManager;
             _config = config;
@@ -49,12 +53,22 @@ namespace Service.Implementation
 
 
                 var result = await _userManager.CreateAsync(user, registerDt.Password);
+
+               
+
                 if (!result.Succeeded)
                 {
                     var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                     return $"Error creating user: {errors}";
                 }
 
+                var details = new UserDetails
+                {
+                    IdentityUserId = user.Id,
+                };
+
+                _identityDbContext.userDetails.Add(details);
+                await _identityDbContext.SaveChangesAsync();
 
                 await _userManager.AddToRoleAsync(user, "User");
 
